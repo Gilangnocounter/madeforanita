@@ -1661,3 +1661,28 @@ window.debugBookImages = function() {
         const imageUrl = img.getAttribute('data-image-url');
     });
 };
+
+// Memaksa musik menyala pada interaksi fisik pertama (Klik / Swipe) di area buku
+if (book) {
+    const forcePlayMusic = () => {
+        if (!isPlaying && birthdayAudio) {
+            // Perintah play() langsung dieksekusi saat jari menyentuh layar (tanpa setTimeout)
+            birthdayAudio.play().then(() => {
+                const musicControl = document.getElementById('musicControl');
+                if(musicControl) {
+                    musicControl.innerHTML = '⏸';
+                    musicControl.classList.add('playing');
+                    musicControl.title = 'Pause Music';
+                }
+                isPlaying = true;
+            }).catch(error => {
+                console.log("Safari memblokir:", error);
+            });
+        }
+    };
+
+    // Pasang 'telinga' untuk mendeteksi sentuhan pertama di Safari/iOS
+    book.addEventListener('touchstart', forcePlayMusic, { passive: true, once: true });
+    book.addEventListener('mousedown', forcePlayMusic, { once: true });
+    book.addEventListener('click', forcePlayMusic, { once: true });
+}
